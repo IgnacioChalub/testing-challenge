@@ -1,0 +1,52 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl"]
+}
+
+// generator dto {
+//  provider                        = "prisma-generator-nestjs-dto"
+//  output                          = "../src/models"
+//  outputToNestJsResourceStructure = "true"
+//  dtoSuffix                       = "DTO"
+//  reExport                        = "true"
+//  fileNamingStyle                 = "camel"
+//}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id  String  @id @default(uuid())
+  username  String  @unique
+  private Boolean
+  posts Post[]
+  followers Followers[] @relation("following")
+  following Followers[] @relation("follower")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  deletedAt DateTime? 
+}
+
+model Followers {
+  id String @id @default(uuid())
+  follower User @relation(name: "follower", fields: [followerId], references: [id])
+  followerId String
+  followed User @relation(name: "following", fields: [followedId], references: [id])
+  followedId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  deletedAt DateTime?  
+  @@unique([followerId, followedId])
+}
+
+model Post {
+  id  String  @id @default(uuid())
+  text String 
+  user User @relation(fields: [userId], references: [id])
+  userId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  deletedAt DateTime?  
+}
