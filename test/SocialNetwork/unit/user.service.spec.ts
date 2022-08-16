@@ -312,4 +312,5 @@ const getError = async <TError>(call: () => unknown): Promise<TError> => {
     } catch (error: unknown) {
       return error as TError;
     }
+
 };
